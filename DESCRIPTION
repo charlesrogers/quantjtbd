@@ -16,3 +16,7 @@ Imports:
     gt,
     lubridate,
     magrittr
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
