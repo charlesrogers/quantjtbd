@@ -1,4 +1,5 @@
 url: https://charlesrogers.github.io/quantjtbd/
 template:
   bootstrap: 5
+  bootswatch: cerulean
 
