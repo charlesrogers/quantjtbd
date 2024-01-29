@@ -5,7 +5,7 @@ template:
   bslib:
     pkgdown-nav-height: 100px
 Authors@R: c(
-    person("Charles", "Rogers", , "charlesrogers@gmail.com", role = c("aut", "cre"),
+    person("Charles", "Rogers", , "charlesrogers@gmail.com", role = c("aut", "cre")
     )
   )
 
