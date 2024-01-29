@@ -1,8 +1,12 @@
 url: https://charlesrogers.github.io/quantjtbd/
 template:
   bootstrap: 5
+  bootswatch: darkly
+  bslib:
+    pkgdown-nav-height: 100px
 Authors@R: c(
     person("Charles", "Rogers", , "charlesrogers@gmail.com", role = c("aut", "cre"),
       comment = c(ORCID = "0000-0003-4757-117X")
     )
   )
+
