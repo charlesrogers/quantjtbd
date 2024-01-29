@@ -1,0 +1,10 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  my-vignette: my-vignette.html
+last_built: 2024-01-29T23:07Z
+urls:
+  reference: https://charlesrogers.github.io/quantjtbd/reference
+  article: https://charlesrogers.github.io/quantjtbd/articles
+
