@@ -1,3 +1,14 @@
+#' builds our datafrae
+#'
+#' @param data input data set
+#' @param job_section name of variable 1
+#'
+#' @return A tibble with the Pearson correlation and the p-value
+#' @export
+#'
+#' @examples
+#' compute_corr(data = faithful, var1 = eruptions, var2 = waiting)
+
 # Swap the labels and the column names
 convert_labels_to_row_names<- function(df) {
   df %<>%
