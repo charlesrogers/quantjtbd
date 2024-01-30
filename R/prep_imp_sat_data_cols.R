@@ -1,19 +1,19 @@
-# This is another weird function...  This function takes the labels from SPSS data and converts them to columns and strips out labels IF they match exactly what I had in my data :/
-
-# limitations: have to do this by section AND imp vs sat
-
-# Switch column labels with variable labels
- convert_labels_to_row_names<- function(df) {
-  sjlabelled::label_to_colnames()
- }
-
-remove_data_prefix <- function(df) {
-# Remove the prefix by splitting on space
-names(df) = sub(".*?\\s", "", names(df))
-# Remove the suffix by splitting on "-"
-names(df) = sub("-.*$", "", names(df))
+# Swap the labels and the column names
+convert_labels_to_row_names<- function(df) {
+  df %<>%
+    sjlabelled::label_to_colnames()
 }
-#names(df_imp_3) = gsub(pattern = ".*-.*", replacement = "", x = names(df_imp_3))
+
+
+# Remove the prefix by splitting on space
+remove_data_prefix <- function(df) {
+  df <- df %>% setNames(sub(".*?\\s", "", names(.)))
+}
+
+# Remove the suffix by splitting on "-"
+remove_data_suffix <- function(df) {
+  df <- df %>% setNames(sub("-.*$","", names(.)))
+}
 
 # change the job names from having spaces to UNDERSCORES
 replace_spaces_with_underscores <- function(df){
@@ -21,28 +21,34 @@ replace_spaces_with_underscores <- function(df){
     janitor::clean_names()
 }
 
+# Merging all the functions that are universal and putting them into a sub-function for th two functions we'll actually use
+prep_data <- function(df){
+  # Switch column labels with variable labels
+  df <-  convert_labels_to_row_names(df)
+  df <- remove_data_prefix(df)
+  df <- replace_spaces_with_underscores(df)
+}
 
-# Add in the "imp__" and "job_step"
 build_imp_column_names <- function(df, job_section) {
-  # Add "imp__" to the beginning of the column name
-  new_col_name <- paste0("imp__", job_section, ".", colnames(df))
-
+  working_df <- prep_data(df)
+# Add "imp__" to the beginning of the column name
+# Add "." + "job_section" variable to just after the "imp__" portion
+  new_col_name <- paste0("imp__", job_section, ".", colnames(working_df))
   # Replace the original column name with the new one
-  df <- setNames(df, new_col_name)
+  working_df <- setNames(working_df, new_col_name)
 
-  return(df)
+  return(working_df)
 }
 
 build_sat_column_names <- function(df, job_section) {
-  # Add "imp__" to the beginning of the column name
-  new_col_name <- paste0("sat__", job_section, ".", colnames(df))
+  working_df <- prep_data(df)
+  # Add "sat__" to the beginning of the column name
+  # Add "." + "job_section" variable to just after the "sat__" portion
+  new_col_name <- paste0("sat__", job_section, ".", colnames(working_df))
 
   # Replace the original column name with the new one
-  df <- setNames(df, new_col_name)
+  working_df <- setNames(working_df, new_col_name)
 
-  return(df)
+  return(working_df)
 }
-
-
-# df_imp_5 <- build_imp_column_names(df_imp_4, "job_section_1")
 
