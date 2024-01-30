@@ -32,6 +32,10 @@ replace_spaces_with_underscores <- function(df){
     janitor::clean_names()
 }
 
+change_labeled_to_factors <- function(df){
+  df <- df %>%
+  mutate_if(haven::is.labelled, as_factor)
+}
 # Merging all the functions that are universal and putting them into a sub-function for th two functions we'll actually use
 prep_data <- function(df){
   # Switch column labels with variable labels
@@ -39,6 +43,7 @@ prep_data <- function(df){
   df <- remove_data_prefix(df)
   df <- remove_data_suffix(df)
   df <- replace_spaces_with_underscores(df)
+  df <- change_labeled_to_factors(df)
 }
 
 build_imp_column_names <- function(df, job_section) {
