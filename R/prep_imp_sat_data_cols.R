@@ -1,13 +1,14 @@
-#' builds our datafrae
+#' Takes SPSS Data that has a label format of "XXXX "Job Name" - "Something you don't want" and convert it the column name and strip everything except the "Job_Name"... It has to be in that format
 #'
-#' @param data input data set
-#' @param job_section name of variable 1
+#' @param data this is the dataframe you want, needs LABELS from importing via Haven
+#' @param job_section name of job section
 #'
-#' @return A tibble with the Pearson correlation and the p-value
+#' @return Dataframe with updated column names
 #' @export
 #'
 #' @examples
-#' compute_corr(data = faithful, var1 = eruptions, var2 = waiting)
+#' build_sat_column_names(data = "df_imp_cols", job_section = "Finding_A_Restaurant")
+#' build_imp_column_names(data = "df_sat_cols", job_section = "Finding_A_Restaurant")
 
 # Swap the labels and the column names
 convert_labels_to_row_names<- function(df) {
@@ -31,8 +32,8 @@ replace_spaces_with_underscores <- function(df){
   df %<>%
     janitor::clean_names()
 }
-
-change_labeled_to_factors <- function(df){
+# Change all haven data labels to factors
+change_labeles_to_factors <- function(df){
   df <- df %>%
   mutate_if(haven::is.labelled, as_factor)
 }
@@ -43,9 +44,10 @@ prep_data <- function(df){
   df <- remove_data_prefix(df)
   df <- remove_data_suffix(df)
   df <- replace_spaces_with_underscores(df)
-  df <- change_labeled_to_factors(df)
+  df <- change_labeles_to_factors(df)
 }
 
+# Prepend the updated columns with the needed IMP and job section prefixes
 build_imp_column_names <- function(df, job_section) {
   df <- prep_data(df)
 # Add "imp__" to the beginning of the column name
@@ -57,6 +59,7 @@ build_imp_column_names <- function(df, job_section) {
   return(df)
 }
 
+# Prepend the updated columns with the needed SAT and job section prefixes
 build_sat_column_names <- function(df, job_section) {
   df <- prep_data(df)
   # Add "sat__" to the beginning of the column name
