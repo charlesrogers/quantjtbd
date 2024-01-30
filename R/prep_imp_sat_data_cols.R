@@ -37,6 +37,7 @@ prep_data <- function(df){
   # Switch column labels with variable labels
   df <-  convert_labels_to_row_names(df)
   df <- remove_data_prefix(df)
+  df <- remove_data_suffix(df)
   df <- replace_spaces_with_underscores(df)
 }
 
