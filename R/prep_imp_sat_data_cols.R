@@ -58,7 +58,6 @@ build_imp_column_names <- function(df, job_section) {
 
   return(df)
 }
-
 # Prepend the updated columns with the needed SAT and job section prefixes
 build_sat_column_names <- function(df, job_section) {
   df <- prep_data(df)
