@@ -1,13 +1,16 @@
-#' Takes takes a dataframe of importance and satisfaction columns in this format "imp__job_step.job_name" & "sat__job_step.job_name" and calculates the importance, satisfaction, and opportunity scores for each. Currently it also prints those elements, but I need to split those into separate functions.
+
+#### Get Total Population Importance, Satisfaction, and Opportunity Scores ####
+#' JTBD_SCORES
 #'
-#' @param data this is the dataframe you want, needs LABELS from importing via Haven
+#' @param your_data_frame
 #'
-#' @return
+#' @return a datframe of
 #' @export
 #'
-#' @examples
-#' get_imp_sat_opp_scores_total_population(data = "importance_satisfaction_datafraome")
-#### Get Total Population Importance, Satisfaction, and Opportunity Scores ####
+#' @examples jtbd_scores("jtbd_importance_and_satisfaction_df")
+#'
+#'
+#'
 jtbd_scores <- function(your_data_frame){
   # Find the columns that start with "imp_" and "sat_" in the data frame
   opportunity_columns_group_1 <- find_imp_sat_columns(your_data_frame)
