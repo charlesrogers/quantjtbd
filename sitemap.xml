@@ -22,10 +22,13 @@
     <loc>https://charlesrogers.github.io/quantjtbd/index.html</loc>
   </url>
   <url>
-    <loc>https://charlesrogers.github.io/quantjtbd/reference/get_imp_sat_opp_scores_total_population.html</loc>
+    <loc>https://charlesrogers.github.io/quantjtbd/reference/convert_labels_to_row_names.html</loc>
   </url>
   <url>
     <loc>https://charlesrogers.github.io/quantjtbd/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://charlesrogers.github.io/quantjtbd/reference/jtbd_scores.html</loc>
   </url>
   <url>
     <loc>https://charlesrogers.github.io/quantjtbd/reference/pipe.html</loc>
