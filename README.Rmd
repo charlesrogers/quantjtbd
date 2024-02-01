@@ -22,9 +22,73 @@ knitr::opts_chunk$set(
 _As of Monday, January 29th, 2024, I neither really know how to code nor make R packages. However that is not a prerequisite to making a package, so here we go.
 This package is for me, Charles Rogers, in my work as a mixed methods User Experience researcher._
 
+## What the QuantJTBD Package Does
+
+The QuantJTBD package takes Jobs to Be Done^[If you'd like a good primer on JTBD, check out [this article](https://medium.com/swlh/a-jobs-to-be-done-jtbd-primer-11585d23ceec)] survey data (in the Outcome Driven Innovation^[see Tony Ulwick's fabulous [What Customers Want](https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673)] format) and measures the frequency.
+
+
+### Quant JTBD Methodology
+
+The scores are calculated in the traditional Outcome Driven Innovation way:
+```{r eval=FALSE}
+importance + importance - satisfaction
+example: 8.4 + 8.4 - 6.7 = 10.1
+```
+To get a bit more specific, since someone's satisfaction with a job doesn't change how important it is, importance should be the floor for opportunity, so we just use the importance score as the opportunity score:
+```{r eval=FALSE}
+importance + (if importance < satisfaction, 0, - satisfaction)
+incorrect calculation: 6.7 + 6.7 - 8.4 = 5
+correct calculation: 6.7 + (if 8.4 > 6.7, 0, else 6.7 - 8.4) = 6.7
+
+```
+
+#### Statistical Significance When Comparing Groups
+
+At some point you will compare JTBD scores (imp, sat, or opp) of >=2 groups of users and someone will (_should_) ask which differences are statistically significant.
+We use the Wilcoxon Rank-sum test^[Are the means of opp scores normally distributed? If not, we use the Wilson Rank-Sum test ] via the X package
+
+```{r eval=FALSE}
+<- wilcox.test()
+```
+
+### Measurement
+
+* Calculates the importance, satisfaction, and opportunity scores
+* Compares the importance, satisfaction, and opportunity scores between two, three, and four groups
+* Calculates the statistical significance between paired group differences at the importance, satisfaction, and opportunity score level.
+
+### Visulization
+
+Generates JTBD graphics such as: 
+
+* Opportunity Score Matrix (Importance x Satisfaction)
+* Tables displaying importance, satisfaction, and opportunity by job step (ranked within step)
+* Cleveland (lollipop) graphs comparing the differences of scores between 2 groups 
+* Radar (or spider) graphs comparing the differences of scores between 2 groups
+
+<to dos: generate graphics with dummy data to show examples of each>
+
+### Segmentation
+* Creates segments with the optimal groups at x, y, and z number of segments
+* Uses LDM to explain which factors explain each segment and how much of an impact each factor has on the between group differences
+
+
 ## Get Your Data Ready
 
 To be honest, the hardest part of this package is getting the data in a format that the package can accept. 
+
+Each column needs to be labelled in the following format:
+
+* "imp__"/"sat__" + "your_job_step_name" + ".name_of_job"
+* No spaces anywhere
+* Job Step and Name of Jobs must match^[I have a major PTSD from exporting data from SurveyMonkey (the spaces between words contained some hidden character in the satisfaction section, probably they were weirdly coded at import). It took me hours (days?) of debugging to find out that was the case] __perfectly__ between the importance & satisfaction columns--the only thing that should be different is the "imp" or "sat" prefix.
+
+Here are a few sample column headers:
+
+* imp__researching.minimize_time_to_evaluate_options
+* sat__researching.minimize_time_to_evaluate_options
+* imp__purchasing.minimize_time_to_receive_payment_confirmation
+* sat__purchasing.minimize_time_to_receive_payment_confirmation
 
 ### Load the data
 
@@ -49,7 +113,7 @@ A few other rules:
 
 ------------------------------------------------------------------------
 
-## Using the Package
+## Using the JTBD Package
 
 ```{r}
 library(quantjtbd)
@@ -61,6 +125,8 @@ library(quantjtbd)
 
 ## Sample Workflow
 
+
+
 ### Import your SPSS data into R
 
 ```{r}
@@ -69,3 +135,4 @@ library(quantjtbd)
 # Check out the data and their labels via the Labeled package's Dictionary functionality
 # dictionary <- labelled::generate_dictionary(df_spss)
 ```
+

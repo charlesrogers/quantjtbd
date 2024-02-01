@@ -1,11 +1,9 @@
 url: https://charlesrogers.github.io/quantjtbd/
 template:
   bootstrap: 5
-  bootswatch: darkly
-  bslib:
-    pkgdown-nav-height: 100px
-Authors@R: c(
-    person("Charles", "Rogers", , "charlesrogers@gmail.com", role = c("aut", "cre")
-    )
-  )
 
+# todos:
+## calculation
+### add statistical signifigance to the paired comparison tables
+### make the comparison tables work
+## visulization

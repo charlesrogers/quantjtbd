@@ -348,10 +348,88 @@ code nor make R packages. However that is not a prerequisite to making a
 package, so here we go. This package is for me, Charles Rogers, in my
 work as a mixed methods User Experience researcher.</em></p>
 </div>
+<div id="what-the-quantjtbd-package-does" class="section level2">
+<h2>What the QuantJTBD Package Does</h2>
+<p>The QuantJTBD package takes Jobs to Be Done<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> survey data (in the
+Outcome Driven Innovation<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> format) and measures the frequency.</p>
+<div id="quant-jtbd-methodology" class="section level3">
+<h3>Quant JTBD Methodology</h3>
+<p>The scores are calculated in the traditional Outcome Driven
+Innovation way:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>importance <span class="sc">+</span> importance <span class="sc">-</span> satisfaction</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>example<span class="sc">:</span> <span class="fl">8.4</span> <span class="sc">+</span> <span class="fl">8.4</span> <span class="sc">-</span> <span class="fl">6.7</span> <span class="ot">=</span> <span class="fl">10.1</span></span></code></pre></div>
+<p>To get a bit more specific, since someone’s satisfaction with a job
+doesn’t change how important it is, importance should be the floor for
+opportunity, so we just use the importance score as the opportunity
+score:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>importance <span class="sc">+</span> (<span class="cf">if</span> importance <span class="sc">&lt;</span> satisfaction, <span class="dv">0</span>, <span class="sc">-</span> satisfaction)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>incorrect calculation<span class="sc">:</span> <span class="fl">6.7</span> <span class="sc">+</span> <span class="fl">6.7</span> <span class="sc">-</span> <span class="fl">8.4</span> <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>correct calculation<span class="sc">:</span> <span class="fl">6.7</span> <span class="sc">+</span> (<span class="cf">if</span> <span class="fl">8.4</span> <span class="sc">&gt;</span> <span class="fl">6.7</span>, <span class="dv">0</span>, <span class="cf">else</span> <span class="fl">6.7</span> <span class="sc">-</span> <span class="fl">8.4</span>) <span class="ot">=</span> <span class="fl">6.7</span></span></code></pre></div>
+<div id="statistical-significance-when-comparing-groups" class="section level4">
+<h4>Statistical Significance When Comparing Groups</h4>
+<p>At some point you will compare JTBD scores (imp, sat, or opp) of
+&gt;=2 groups of users and someone will (<em>should</em>) ask which
+differences are statistically significant. We use the Wilcoxon Rank-sum
+test<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> via
+the X package</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>()</span></code></pre></div>
+</div>
+</div>
+<div id="measurement" class="section level3">
+<h3>Measurement</h3>
+<ul>
+<li>Calculates the importance, satisfaction, and opportunity scores</li>
+<li>Compares the importance, satisfaction, and opportunity scores
+between two, three, and four groups</li>
+<li>Calculates the statistical significance between paired group
+differences at the importance, satisfaction, and opportunity score
+level.</li>
+</ul>
+</div>
+<div id="visulization" class="section level3">
+<h3>Visulization</h3>
+<p>Generates JTBD graphics such as:</p>
+<ul>
+<li>Opportunity Score Matrix (Importance x Satisfaction)</li>
+<li>Tables displaying importance, satisfaction, and opportunity by job
+step (ranked within step)</li>
+<li>Cleveland (lollipop) graphs comparing the differences of scores
+between 2 groups</li>
+<li>Radar (or spider) graphs comparing the differences of scores between
+2 groups</li>
+</ul>
+<p><to dos: generate graphics with dummy data to show examples of each></p>
+</div>
+<div id="segmentation" class="section level3">
+<h3>Segmentation</h3>
+<ul>
+<li>Creates segments with the optimal groups at x, y, and z number of
+segments</li>
+<li>Uses LDM to explain which factors explain each segment and how much
+of an impact each factor has on the between group differences</li>
+</ul>
+</div>
+</div>
 <div id="get-your-data-ready" class="section level2">
 <h2>Get Your Data Ready</h2>
 <p>To be honest, the hardest part of this package is getting the data in
 a format that the package can accept.</p>
+<p>Each column needs to be labelled in the following format:</p>
+<ul>
+<li>“imp__“/”sat__” + “your_job_step_name” + “.name_of_job”</li>
+<li>No spaces anywhere</li>
+<li>Job Step and Name of Jobs must match<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>
+<strong>perfectly</strong> between the importance &amp; satisfaction
+columns–the only thing that should be different is the “imp” or “sat”
+prefix.</li>
+</ul>
+<p>Here are a few sample column headers:</p>
+<ul>
+<li>imp__researching.minimize_time_to_evaluate_options</li>
+<li>sat__researching.minimize_time_to_evaluate_options</li>
+<li>imp__purchasing.minimize_time_to_receive_payment_confirmation</li>
+<li>sat__purchasing.minimize_time_to_receive_payment_confirmation</li>
+</ul>
 <div id="load-the-data" class="section level3">
 <h3>Load the data</h3>
 <p>Load the data (ideally via SPSS) because we want to use the column
@@ -361,10 +439,10 @@ labels in the graphics</p>
 <h3>Format the data</h3>
 <p>To get this beast of a function to work, your jobs columns must
 follow the following format:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="st">&quot;imp__&quot;</span> <span class="sc">+</span> <span class="st">&quot;job section&quot;</span> <span class="sc">+</span> <span class="st">&quot;.&quot;</span> <span class="sc">+</span> <span class="st">&quot;job&quot;</span> </span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co"># Example: imp__job_step_1.minimize_time_to_do_something</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="st">&quot;sat__&quot;</span> <span class="sc">+</span> <span class="st">&quot;job section&quot;</span> <span class="sc">+</span> <span class="st">&quot;.&quot;</span> <span class="sc">+</span> <span class="st">&quot;job&quot;</span> </span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Example:sat__job_step_1.minimize_time_to_do_something</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="st">&quot;imp__&quot;</span> <span class="sc">+</span> <span class="st">&quot;job section&quot;</span> <span class="sc">+</span> <span class="st">&quot;.&quot;</span> <span class="sc">+</span> <span class="st">&quot;job&quot;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># Example: imp__job_step_1.minimize_time_to_do_something</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="st">&quot;sat__&quot;</span> <span class="sc">+</span> <span class="st">&quot;job section&quot;</span> <span class="sc">+</span> <span class="st">&quot;.&quot;</span> <span class="sc">+</span> <span class="st">&quot;job&quot;</span> </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Example:sat__job_step_1.minimize_time_to_do_something</span></span></code></pre></div>
 <p>A few other rules:</p>
 <ul>
 <li>Job names must be DISTINCT<br />
@@ -377,19 +455,35 @@ you want to calculate<br />
 <hr />
 </div>
 </div>
-<div id="using-the-package" class="section level2">
-<h2>Using the Package</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(quantjtbd)</span></code></pre></div>
+<div id="using-the-jtbd-package" class="section level2">
+<h2>Using the JTBD Package</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(quantjtbd)</span></code></pre></div>
 </div>
 <div id="sample-workflow" class="section level2">
 <h2>Sample Workflow</h2>
 <div id="import-your-spss-data-into-r" class="section level3">
 <h3>Import your SPSS data into R</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co"># df_spss  &lt;-  haven::read_sav(&quot;YOUR_FILE.sav&quot;)</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Check out the data and their labels via the Labeled package&#39;s Dictionary functionality</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># dictionary &lt;- labelled::generate_dictionary(df_spss)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co"># df_spss  &lt;-  haven::read_sav(&quot;YOUR_FILE.sav&quot;)</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co"># Check out the data and their labels via the Labeled package&#39;s Dictionary functionality</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># dictionary &lt;- labelled::generate_dictionary(df_spss)</span></span></code></pre></div>
 </div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>If you’d like a good primer on JTBD, check out <a href="https://medium.com/swlh/a-jobs-to-be-done-jtbd-primer-11585d23ceec">this
+article</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>see Tony Ulwick’s fabulous <a href="https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673">What
+Customers Want</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>Are the means of opp scores normally distributed? If
+not, we use the Wilson Rank-Sum test <a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>I have a major PTSD from exporting data from
+SurveyMonkey (the spaces between words contained some hidden character
+in the satisfaction section, probably they were weirdly coded at
+import). It took me hours (days?) of debugging to find out that was the
+case<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
 
 
