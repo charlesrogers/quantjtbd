@@ -78,6 +78,7 @@
     
     
 <hr>
+<hr>
 <div class="section level4">
 <h4 id="caveat">Caveat<a class="anchor" aria-label="anchor" href="#caveat"></a>
 </h4>
@@ -87,42 +88,97 @@ package, so here we go. This package is for me, Charles Rogers, in my
 work as a mixed methods User Experience researcher.</em></p>
 </div>
 <div class="section level2">
-<h2 id="get-your-data-ready">Get Your Data Ready<a class="anchor" aria-label="anchor" href="#get-your-data-ready"></a>
+<h2 id="what-the-quantjtbd-package-does">What the QuantJTBD Package Does<a class="anchor" aria-label="anchor" href="#what-the-quantjtbd-package-does"></a>
 </h2>
-<p>To be honest, the hardest part of this package is getting the data in
-a format that the package can accept.</p>
+<p>The QuantJTBD package takes Jobs to Be Done<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;If you’d like a good primer on JTBD, check out &lt;a href="https://medium.com/swlh/a-jobs-to-be-done-jtbd-primer-11585d23ceec" class="external-link"&gt;this
+article&lt;/a&gt;&lt;/p&gt;'><sup>1</sup></a> survey data (in the
+Outcome Driven Innovation<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;see Tony Ulwick’s fabulous &lt;a href="https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673" class="external-link"&gt;What
+Customers Want&lt;/a&gt;&lt;/p&gt;'><sup>2</sup></a> format) and measures the frequency.</p>
+<p>This means you need to ask your questions on a 1-5 likert scale and
+recode the scales (Not important at all, Slightly important, Somewhat
+important, Very important, Extremely important) as numeric factors
+(1-5)</p>
 <div class="section level3">
-<h3 id="load-the-data">Load the data<a class="anchor" aria-label="anchor" href="#load-the-data"></a>
+<h3 id="quant-jtbd-methodology">Quant JTBD Methodology<a class="anchor" aria-label="anchor" href="#quant-jtbd-methodology"></a>
 </h3>
-<p>Load the data (ideally via SPSS) because we want to use the column
-labels in the graphics</p>
+<p>The scores are calculated in the traditional Outcome Driven
+Innovation way:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">importance</span> <span class="op">+</span> <span class="va">importance</span> <span class="op">-</span> <span class="va">satisfaction</span></span>
+<span><span class="va">example</span><span class="op">:</span> <span class="fl">8.4</span> <span class="op">+</span> <span class="fl">8.4</span> <span class="op">-</span> <span class="fl">6.7</span> <span class="op">=</span> <span class="fl">10.1</span></span></code></pre></div>
+<p>To get a bit more specific, since someone’s satisfaction with a job
+doesn’t change how important it is, importance should be the floor for
+opportunity, so we just use the importance score as the opportunity
+score:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>importance <span class="sc">+</span> (<span class="cf">if</span> importance <span class="sc">&lt;</span> satisfaction, <span class="dv">0</span>, <span class="sc">-</span> satisfaction)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>incorrect calculation<span class="sc">:</span> <span class="fl">6.7</span> <span class="sc">+</span> <span class="fl">6.7</span> <span class="sc">-</span> <span class="fl">8.4</span> <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>correct calculation<span class="sc">:</span> <span class="fl">6.7</span> <span class="sc">+</span> (<span class="cf">if</span> <span class="fl">8.4</span> <span class="sc">&gt;</span> <span class="fl">6.7</span>, <span class="dv">0</span>, <span class="cf">else</span> <span class="fl">6.7</span> <span class="sc">-</span> <span class="fl">8.4</span>) <span class="ot">=</span> <span class="fl">6.7</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="statistical-significance-when-comparing-job-scores-between-groups">Statistical Significance When Comparing Job Scores between
+Groups<a class="anchor" aria-label="anchor" href="#statistical-significance-when-comparing-job-scores-between-groups"></a>
+</h4>
+<p>At some point you will compare JTBD scores (imp, sat, or opp) of
+&gt;=2 groups of users and someone will (<em>should</em>) ask which
+differences are statistically significant. We use the Wilcoxon Rank-sum
+test<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;If the means of the opp scores are normally distributed
+we use the &lt;/p&gt;"><sup>3</sup></a> as
+we don’t know if the means are normally distributed.</p>
+<ul>
+<li>are we even comparing means [pinned]</li>
+<li>t-test:</li>
+<li>maybe a chi square (which is for binary outcomes) [pinned] and we
+can do correlation</li>
+<li>ANOVA: 3 or more groups with categories with means</li>
+<li>~Paired samples t-test~</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>()</span></code></pre></div>
+</div>
 </div>
 <div class="section level3">
-<h3 id="format-the-data">Format the data<a class="anchor" aria-label="anchor" href="#format-the-data"></a>
+<h3 id="measurement">Measurement<a class="anchor" aria-label="anchor" href="#measurement"></a>
 </h3>
-<p>To get this beast of a function to work, your jobs columns must
-follow the following format:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="st">"imp__"</span> <span class="op">+</span> <span class="st">"job section"</span> <span class="op">+</span> <span class="st">"."</span> <span class="op">+</span> <span class="st">"job"</span> </span>
-<span><span class="co"># Example: imp__job_step_1.minimize_time_to_do_something</span></span>
-<span><span class="st">"sat__"</span> <span class="op">+</span> <span class="st">"job section"</span> <span class="op">+</span> <span class="st">"."</span> <span class="op">+</span> <span class="st">"job"</span> </span>
-<span><span class="co"># Example:sat__job_step_1.minimize_time_to_do_something</span></span></code></pre></div>
-<p>A few other rules:</p>
 <ul>
-<li>Job names must be DISTINCT<br>
-</li>
-<li>You must have an importance and satisfaction column for every job
-you want to calculate<br>
-</li>
-<li>
+<li>Calculates the importance, satisfaction, and opportunity scores</li>
+<li>Compares the importance, satisfaction, and opportunity scores
+between two, three, and four groups</li>
+<li>Calculates the statistical significance between paired group
+differences at the importance, satisfaction, and opportunity score
+level.</li>
 </ul>
+</div>
+<div class="section level3">
+<h3 id="visulization">Visulization<a class="anchor" aria-label="anchor" href="#visulization"></a>
+</h3>
+<p>Generates JTBD graphics such as:</p>
+<ul>
+<li>Opportunity Score Matrix (Importance x Satisfaction)</li>
+<li>Tables displaying importance, satisfaction, and opportunity by job
+step (ranked within step)</li>
+<li>Cleveland (lollipop) graphs comparing the differences of scores
+between 2 groups</li>
+<li>Radar (or spider) graphs comparing the differences of scores between
+2 groups</li>
+</ul>
+<p><to dos: generate graphics with dummy data to show examples of each></to></p>
+</div>
+<div class="section level3">
+<h3 id="creating-segmentats">Creating Segmentats<a class="anchor" aria-label="anchor" href="#creating-segmentats"></a>
+</h3>
+<ul>
+<li>Creates segments with the optimal groups at x, y, and z number of
+segments</li>
+<li>Uses Latent Profile Analyses to explain which factors explain each
+segment and how much of an impact each factor has on the between group
+differences</li>
+</ul>
+<p>Groups and condition on need</p>
 <hr>
 </div>
 </div>
 <div class="section level2">
-<h2 id="using-the-package">Using the Package<a class="anchor" aria-label="anchor" href="#using-the-package"></a>
+<h2 id="using-the-jtbd-package">Using the JTBD Package<a class="anchor" aria-label="anchor" href="#using-the-jtbd-package"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/charlesrogers/quantjtbd" class="external-link">quantjtbd</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -131,13 +187,131 @@ you want to calculate<br>
 <div class="section level3">
 <h3 id="import-your-spss-data-into-r">Import your SPSS data into R<a class="anchor" aria-label="anchor" href="#import-your-spss-data-into-r"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co"># df_spss  &lt;-  haven::read_sav("YOUR_FILE.sav")</span></span>
+<span> <span class="va">df_spss</span>  <span class="op">&lt;-</span>  <span class="fu">haven</span><span class="fu">::</span><span class="fu">read_sav</span><span class="op">(</span><span class="st">"YOUR_FILE.sav"</span><span class="op">)</span></span>
 <span><span class="co"># Check out the data and their labels via the Labeled package's Dictionary functionality</span></span>
-<span><span class="co"># dictionary &lt;- labelled::generate_dictionary(df_spss)</span></span></code></pre></div>
+<span> <span class="va">dictionary</span> <span class="op">&lt;-</span> <span class="fu">labelled</span><span class="fu">::</span><span class="fu">generate_dictionary</span><span class="op">(</span><span class="va">df_spss</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
+<div class="section level2">
+<h2 id="reanme-your-columns-in-this-format">Reanme Your Columns In This Format<a class="anchor" aria-label="anchor" href="#reanme-your-columns-in-this-format"></a>
+</h2>
+<p>To be honest, the hardest part of this package is getting the data in
+a format that the package can accept.</p>
+<p>Each column needs to be labelled in the following format:</p>
+<ul>
+<li>“imp__“/”sat__” + “your_job_step_name” + “.name_of_job”</li>
+<li>No spaces anywhere</li>
+<li>Job Step and Name of Jobs must literally <strong>exactly</strong>
+match<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;I have a MAJOR trauma because somehow a “no break space”
+character (unicode U+00A0, “space” + “option” key on mac) got inserted
+instead of spaces for the satisfaction section when exporting data from
+SurveyMonkey. It took me hours (days?) of debugging to find out why they
+weren’t matching as these are invisible in excel format.&lt;/p&gt;"><sup>4</sup></a>
+between the importance &amp; satisfaction columns–the only thing that
+should be different is the “imp” or “sat” prefix.</li>
+</ul>
+<p>Here are a few sample column names:</p>
+<ul>
+<li>imp__researching.minimize_time_to_evaluate_options</li>
+<li>sat__researching.minimize_time_to_evaluate_options</li>
+<li>imp__purchasing.minimize_time_to_receive_payment_confirmation</li>
+<li>sat__purchasing.minimize_time_to_receive_payment_confirmation</li>
+</ul>
+<div class="section level4">
+<h4 id="labeling-spss--sav-data-using-quantjtbd">Labeling SPSS (.sav) Data Using QuantJTBD<a class="anchor" aria-label="anchor" href="#labeling-spss--sav-data-using-quantjtbd"></a>
+</h4>
+<p>Load the data (ideally via SPSS) because we want to use the column
+labels in the graphics so you know which scores correspond to which
+objectives. The <code>build_imp_column_names</code> and
+<code>build_sat_column_names</code> functions primarily renames the
+column names (it also change it to factor).</p>
+<p>Currently it accepts a standard format given from survey instruments
+which is:
+<code>DistinctQuestionId_Question_Text - How Important...</code> for
+importance columns and
+<code>DistinctQuestionId_Question_Text - How Satisfied...</code> for
+satisfaction.</p>
+<p>If your data isn’t in this format, you’ll have to rename them
+manually (which isn’t so bad likely using <code>mutate</code>)</p>
+<p>Here is specifically what <code>build_imp_column_names</code> and
+<code>build_sat_column_names</code> do:</p>
+<ul>
+<li>Swap the labels and the column names</li>
+<li>Remove the prefix by splitting on space</li>
+<li>Remove the suffix by splitting on “-”</li>
+<li>Change any spaces in the names to underscores</li>
+<li>Prefix the updated columns with the needed <code>imp__</code>,
+<code>sat__</code>, and <code>.job_ _section</code> portions of the
+column name</li>
+<li>Change all <code>haven</code> data labels to factors (not a renaming
+task, but it’s part of this function for now)</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example</span></span>
+<span><span class="va">df_renamed_imp_cols</span> <span class="op">&lt;-</span> <span class="fu">build_sat_column_names</span><span class="op">(</span><span class="va">df_imp_only_cols</span>,<span class="st">"Job_Step_Name"</span><span class="op">)</span></span>
+<span><span class="va">df_renamed_sat_cols</span> <span class="op">&lt;-</span> <span class="fu">build_imp_column_names</span><span class="op">(</span><span class="va">df_sat_only_cols</span>,<span class="st">"Job_Step_Name"</span><span class="op">)</span></span>
+<span><span class="va">df_merged_imp_sat_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">df_renamed_imp_cols</span>,<span class="va">df_renamed_sat_cols</span><span class="op">)</span> </span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="renaming-the-columns-some-other-way">Renaming the columns some other way<a class="anchor" aria-label="anchor" href="#renaming-the-columns-some-other-way"></a>
+</h3>
+<p>Column naming <strong>RULES</strong> in order to be able to use the
+package:</p>
+<ul>
+<li>Each job step (<code>imp__JOB_STEP.job_name</code>) must be DISTINCT
+from other job steps</li>
+<li>Each job name (<code>imp__job_step.JOB_NAME</code>) must be DISTINCT
+from other job names</li>
+<li>Each job step and job name (<code>imp__JOB_STEP.JOB_NAME</code>)
+must be IDENTICAL between the importance and satisfaction columns–the
+only thing that changes is the prefix:
+<code>imp__researching.minimize_time_to_evaluate_options</code>
+<code>sat__researching.minimize_time_to_evaluate_options</code>
+</li>
+<li>You must have an importance and satisfaction column for every job
+you want to calculate<br>
+</li>
+<li>No spaces in the column name</li>
+<li><strong>Data must be in factor format</strong></li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="package-todo-list">Package Todo List<a class="anchor" aria-label="anchor" href="#package-todo-list"></a>
+</h2>
+<p>Build it for this survey THEN make it extensible</p>
+<ul>
+<li>Add Stat sig calculations for the pairwise comparisons</li>
+<li>Get the code working on this new survey</li>
+<li>Split each function into sub functions</li>
+<li>Create visualizations</li>
+<li>Improve the recode functions for SPSS
+<ul>
+<li>Allow the user to specify the delimiters</li>
+<li>We shouldn’t need to make either delimiter optional</li>
+</ul>
+</li>
+</ul>
+<div class="section level3">
+<h3 id="do-not-do-list">Do Not Do List<a class="anchor" aria-label="anchor" href="#do-not-do-list"></a>
+</h3>
+<ul>
+<li>Avoid building functions for descritive statistics</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="random-musings-about-jtbd">Random Musings About JTBD<a class="anchor" aria-label="anchor" href="#random-musings-about-jtbd"></a>
+</h2>
+<p>From my experience doing JTBD projects in multiple industries, the
+jobs are largely the same at <a href="#">higher levels</a>, but get more
+distinct (and also <a href="#">more useful for product decisions</a>) at
+lower levels.</p>
+<p>devtools::document()</p>
+</div>
+
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
 </div>
