@@ -369,13 +369,22 @@ score:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>importance <span class="sc">+</span> (<span class="cf">if</span> importance <span class="sc">&lt;</span> satisfaction, <span class="dv">0</span>, <span class="sc">-</span> satisfaction)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>incorrect calculation<span class="sc">:</span> <span class="fl">6.7</span> <span class="sc">+</span> <span class="fl">6.7</span> <span class="sc">-</span> <span class="fl">8.4</span> <span class="ot">=</span> <span class="dv">5</span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>correct calculation<span class="sc">:</span> <span class="fl">6.7</span> <span class="sc">+</span> (<span class="cf">if</span> <span class="fl">8.4</span> <span class="sc">&gt;</span> <span class="fl">6.7</span>, <span class="dv">0</span>, <span class="cf">else</span> <span class="fl">6.7</span> <span class="sc">-</span> <span class="fl">8.4</span>) <span class="ot">=</span> <span class="fl">6.7</span></span></code></pre></div>
-<div id="statistical-significance-when-comparing-groups" class="section level4">
-<h4>Statistical Significance When Comparing Groups</h4>
+<div id="statistical-significance-when-comparing-job-scores-between-groups" class="section level4">
+<h4>Statistical Significance When Comparing Job Scores between
+Groups</h4>
 <p>At some point you will compare JTBD scores (imp, sat, or opp) of
 &gt;=2 groups of users and someone will (<em>should</em>) ask which
 differences are statistically significant. We use the Wilcoxon Rank-sum
-test<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> via
-the X package</p>
+test<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> as
+we don’t know if the means are normally distributed.</p>
+<ul>
+<li>are we even comparing means [pinned]</li>
+<li>t-test:</li>
+<li>maybe a chi square (which is for binary outcomes) [pinned] and we
+can do correlation</li>
+<li>ANOVA: 3 or more groups with categories with means</li>
+<li>~Paired samples t-test~</li>
+</ul>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>()</span></code></pre></div>
 </div>
 </div>
@@ -404,14 +413,16 @@ between 2 groups</li>
 </ul>
 <p><to dos: generate graphics with dummy data to show examples of each></p>
 </div>
-<div id="segmentation" class="section level3">
-<h3>Segmentation</h3>
+<div id="creating-segmentats" class="section level3">
+<h3>Creating Segmentats</h3>
 <ul>
 <li>Creates segments with the optimal groups at x, y, and z number of
 segments</li>
-<li>Uses LDM to explain which factors explain each segment and how much
-of an impact each factor has on the between group differences</li>
+<li>Uses Latent Profile Analyses to explain which factors explain each
+segment and how much of an impact each factor has on the between group
+differences</li>
 </ul>
+<p>Groups and condition on need</p>
 <hr />
 </div>
 </div>
@@ -515,7 +526,7 @@ you want to calculate<br />
 <li>Improve the recode functions for SPSS
 <ul>
 <li>Allow the user to specify the delimiters</li>
-<li>Make either delimiter optional</li>
+<li>We shouldn’t need to make either delimiter optional</li>
 </ul></li>
 </ul>
 <div id="do-not-do-list" class="section level3">
@@ -531,6 +542,7 @@ you want to calculate<br />
 jobs are largely the same at <a href="#">higher levels</a>, but get more
 distinct (and also <a href="#">more useful for product decisions</a>) at
 lower levels.</p>
+<p>devtools::document()</p>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr />
@@ -539,8 +551,8 @@ lower levels.</p>
 article</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p>see Tony Ulwick’s fabulous <a href="https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673">What
 Customers Want</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>Are the means of opp scores normally distributed? If
-not, we use the Wilson Rank-Sum test <a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>If the means of the opp scores are normally distributed
+we use the <a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 <li id="fn4"><p>I have a MAJOR trauma because somehow a “no break space”
 character (unicode U+00A0, “space” + “option” key on mac) got inserted
 instead of spaces for the satisfaction section when exporting data from

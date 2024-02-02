@@ -43,10 +43,16 @@ correct calculation: 6.7 + (if 8.4 > 6.7, 0, else 6.7 - 8.4) = 6.7
 
 ```
 
-#### Statistical Significance When Comparing Groups
+#### Statistical Significance When Comparing Job Scores between Groups
 
 At some point you will compare JTBD scores (imp, sat, or opp) of >=2 groups of users and someone will (_should_) ask which differences are statistically significant.
-We use the Wilcoxon Rank-sum test^[Are the means of opp scores normally distributed? If not, we use the Wilson Rank-Sum test ] via the X package
+We use the Wilcoxon Rank-sum test^[If the means of the opp scores are normally distributed we use the ] as we don't know if the means are normally distributed.
+
+* are we even comparing means [pinned]
+* t-test: 
+* maybe a chi square (which is for binary outcomes) [pinned] and we can do correlation
+* ANOVA: 3 or more groups with categories with means
+* ~Paired samples t-test~
 
 ```{r eval=FALSE}
 <- wilcox.test()
@@ -69,9 +75,11 @@ Generates JTBD graphics such as:
 
 <to dos: generate graphics with dummy data to show examples of each>
 
-### Segmentation
+### Creating Segmentats
 * Creates segments with the optimal groups at x, y, and z number of segments
-* Uses LDM to explain which factors explain each segment and how much of an impact each factor has on the between group differences
+* Uses Latent Profile Analyses to explain which factors explain each segment and how much of an impact each factor has on the between group differences
+
+Groups and condition on need
 
 
 
@@ -163,7 +171,7 @@ Build it for this survey THEN make it extensible
 * Create visualizations
 * Improve the recode functions for SPSS
   * Allow the user to specify the delimiters
-  * Make either delimiter optional
+  * We shouldn't need to make either delimiter optional
 
 
 ### Do Not Do List
@@ -172,3 +180,6 @@ Build it for this survey THEN make it extensible
 
 ## Random Musings About JTBD
 From my experience doing JTBD projects in multiple industries, the jobs are largely the same at [higher levels](#), but get more distinct (and also [more useful for product decisions](#)) at lower levels.
+
+
+devtools::document()
