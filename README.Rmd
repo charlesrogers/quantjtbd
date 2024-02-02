@@ -26,6 +26,7 @@ This package is for me, Charles Rogers, in my work as a mixed methods User Exper
 
 The QuantJTBD package takes Jobs to Be Done^[If you'd like a good primer on JTBD, check out [this article](https://medium.com/swlh/a-jobs-to-be-done-jtbd-primer-11585d23ceec)] survey data (in the Outcome Driven Innovation^[see Tony Ulwick's fabulous [What Customers Want](https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673)] format) and measures the frequency.
 
+This means you need to ask your questions on a 1-5 likert scale and recode the scales (Not important at all, Slightly important, Somewhat important, Very important, Extremely important) as numeric factors (1-5)
 
 ### Quant JTBD Methodology
 
@@ -73,43 +74,7 @@ Generates JTBD graphics such as:
 * Uses LDM to explain which factors explain each segment and how much of an impact each factor has on the between group differences
 
 
-## Get Your Data Ready
 
-To be honest, the hardest part of this package is getting the data in a format that the package can accept. 
-
-Each column needs to be labelled in the following format:
-
-* "imp__"/"sat__" + "your_job_step_name" + ".name_of_job"
-* No spaces anywhere
-* Job Step and Name of Jobs must match^[I have a major PTSD from exporting data from SurveyMonkey (the spaces between words contained some hidden character in the satisfaction section, probably they were weirdly coded at import). It took me hours (days?) of debugging to find out that was the case] __perfectly__ between the importance & satisfaction columns--the only thing that should be different is the "imp" or "sat" prefix.
-
-Here are a few sample column headers:
-
-* imp__researching.minimize_time_to_evaluate_options
-* sat__researching.minimize_time_to_evaluate_options
-* imp__purchasing.minimize_time_to_receive_payment_confirmation
-* sat__purchasing.minimize_time_to_receive_payment_confirmation
-
-### Load the data
-
-Load the data (ideally via SPSS) because we want to use the column labels in the graphics
-
-### Format the data
-
-To get this beast of a function to work, your jobs columns must follow the following format:
-
-```{r eval=FALSE}
-"imp__" + "job section" + "." + "job" 
-# Example: imp__job_step_1.minimize_time_to_do_something
-"sat__" + "job section" + "." + "job" 
-# Example:sat__job_step_1.minimize_time_to_do_something
-```
-
-A few other rules:
-
-* Job names must be DISTINCT  
-* You must have an importance and satisfaction column for every job you want to calculate  
-* 
 
 ------------------------------------------------------------------------
 
@@ -125,14 +90,85 @@ library(quantjtbd)
 
 ## Sample Workflow
 
-
-
 ### Import your SPSS data into R
 
-```{r}
+```{r eval=FALSE}
 
-# df_spss  <-  haven::read_sav("YOUR_FILE.sav")
+ df_spss  <-  haven::read_sav("YOUR_FILE.sav")
 # Check out the data and their labels via the Labeled package's Dictionary functionality
-# dictionary <- labelled::generate_dictionary(df_spss)
+ dictionary <- labelled::generate_dictionary(df_spss)
 ```
 
+## Reanme Your Columns In This Format
+
+To be honest, the hardest part of this package is getting the data in a format that the package can accept. 
+
+Each column needs to be labelled in the following format:
+
+* "imp__"/"sat__" + "your_job_step_name" + ".name_of_job"
+* No spaces anywhere
+* Job Step and Name of Jobs must literally __exactly__ match^[I have a MAJOR trauma because somehow a "no break space" character (unicode U+00A0, "space" + "option" key on mac) got inserted instead of spaces for the satisfaction section when exporting data from SurveyMonkey. It took me hours (days?) of debugging to find out why they weren't matching as these are invisible in excel format.] between the importance & satisfaction columns--the only thing that should be different is the "imp" or "sat" prefix.
+
+Here are a few sample column names:
+
+* imp__researching.minimize_time_to_evaluate_options
+* sat__researching.minimize_time_to_evaluate_options
+* imp__purchasing.minimize_time_to_receive_payment_confirmation
+* sat__purchasing.minimize_time_to_receive_payment_confirmation
+
+#### Labeling SPSS (.sav) Data Using QuantJTBD
+
+Load the data (ideally via SPSS) because we want to use the column labels in the graphics so you know which scores correspond to which objectives.
+The `build_imp_column_names` and `build_sat_column_names` functions primarily renames the column names (it also change it to factor).
+
+Currently it accepts a standard format given from survey instruments which is:
+`DistinctQuestionId_Question_Text - How Important...` for importance columns and `DistinctQuestionId_Question_Text - How Satisfied...` for satisfaction.
+
+If your data isn't in this format, you'll have to rename them manually (which isn't so bad likely using `mutate`)
+
+Here is specifically what `build_imp_column_names` and `build_sat_column_names` do:
+
++ Swap the labels and the column names
++ Remove the prefix by splitting on space
++ Remove the suffix by splitting on "-"
++ Change any spaces in the names to underscores
++ Prefix the updated columns with the needed `imp__`, `sat__`, and `.job_ _section` portions of the column name
++ Change all `haven` data labels to factors (not a renaming task, but it's part of this function for now)
+
+```{r eval=FALSE}
+# Example
+df_renamed_imp_cols <- build_sat_column_names(df_imp_only_cols,"Job_Step_Name")
+df_renamed_sat_cols <- build_imp_column_names(df_sat_only_cols,"Job_Step_Name")
+df_merged_imp_sat_cols <- cbind(df_renamed_imp_cols,df_renamed_sat_cols) 
+```
+
+### Renaming the columns some other way
+
+Column naming __RULES__ in order to be able to use the package:
+
+* Each job step (`imp__JOB_STEP.job_name`) must be DISTINCT from other job steps
+* Each job name (`imp__job_step.JOB_NAME`) must be DISTINCT from other job names
+* Each job step and job name (`imp__JOB_STEP.JOB_NAME`) must be IDENTICAL between the importance and satisfaction columns--the only thing that changes is the prefix: `imp__researching.minimize_time_to_evaluate_options`  `sat__researching.minimize_time_to_evaluate_options`
+* You must have an importance and satisfaction column for every job you want to calculate  
+* No spaces in the column name
+* __Data must be in factor format__ 
+
+## Package Todo List
+
+Build it for this survey THEN make it extensible
+
+* Add Stat sig calculations for the pairwise comparisons
+* Get the code working on this new survey
+* Split each function into sub functions
+* Create visualizations
+* Improve the recode functions for SPSS
+  * Allow the user to specify the delimiters
+  * Make either delimiter optional
+
+
+### Do Not Do List
+* Avoid building functions for descritive statistics
+
+
+## Random Musings About JTBD
+From my experience doing JTBD projects in multiple industries, the jobs are largely the same at [higher levels](#), but get more distinct (and also [more useful for product decisions](#)) at lower levels.
