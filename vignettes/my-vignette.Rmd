@@ -70,9 +70,156 @@ We use the Wilcoxon Rank-sum test^[If the means of the opp scores are normally d
 
 Generates JTBD graphics such as: 
 
-* Opportunity Score Matrix (Importance x Satisfaction)
-* Tables displaying importance, satisfaction, and opportunity by job step (ranked within step)
-* Cleveland (lollipop) graphs comparing the differences of scores between 2 groups 
+#### Opportunity Score Matrix (Importance x Satisfaction)
+
+##### Labeled Matrix > 10
+```{r load-packages, someplot, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(magrittr)
+library(knitr)
+library(paletteer)
+library(gt)
+library(ggplot2)
+objective <- c("Minimize_time_to_do_job_1","Minimize_time_to_do_job_2","Minimize_time_to_do_job_3","Minimize_time_to_do_job_4","Minimize_time_to_do_job_5","Minimize_time_to_do_job_6","Minimize_time_to_do_job_7","Minimize_time_to_do_job_8","Minimize_time_to_do_job_9","Minimize_time_to_do_job_10")
+ df_test <- tibble(objective)
+
+project_name_short <- "Your JTBD Project"
+sample_description <- "N=500 Sample Description"
+title_string <- "Your JTBD Project"
+subtitle_string <- "Your JTBD Project"
+
+df_test <- df_test %>%
+  mutate(`Importance` = round(runif(10,6,9.75),1)) %>%
+  mutate(`Satisfaction` = round(runif(10,5,9),1)) %>%
+  mutate(opportunity_score = case_when(`Importance`>`Satisfaction`~`Importance`+`Importance`-`Satisfaction`,
+                                                    `Satisfaction`>=`Importance`~`Importance`),
+         rank_total_population=rank(opportunity_score))
+
+df_test %>%
+    mutate(high_opportunity=if_else(opportunity_score>=10,"high-priority opportunity","other opportunity")) %>%
+    ggplot(aes(x=`Importance`,y=`Satisfaction`,color=high_opportunity,label=objective))+geom_point() + 
+    geom_text(aes(label=ifelse(opportunity_score>=10,as.character(objective),'')),hjust=0,vjust=0,angle = 45) +
+    #coord_flip() +
+    #+ scale_x_discrete(drop=FALSE)
+    labs(title=title_string,subtitle=subtitle_string,x="Importance",y="Satisfaction",color="Opportunity\nValue",fill="", size="")+#,caption=paste0("Data as of ",today()) ,caption="NYC Research Team" ,caption=paste0("Created ",today())
+    theme(text=element_text(family = "Roboto"),
+          panel.grid.major = element_line(color = "#DAE1E7"),
+          panel.background = element_blank(),axis.text = element_text(size = 12),
+          axis.text.x = element_text(margin = margin(t = 5)),#hjust = 1,angle=90
+          axis.text.y = element_text(margin = margin(r = 5)),
+          axis.title = element_text (size = 15),
+          axis.line = element_line(),
+          axis.title.y = element_text(margin = margin(r = 10), hjust = 0.5),
+          axis.title.x = element_text(margin = margin(t = 10), hjust = 0.5),
+          plot.caption = element_text(size = 8,
+                                      margin = margin(t = 10),
+                                      color = "#3D4852"), 
+          title = element_text (size = 15,margin = margin(b = 10)),) +
+    guides(fill=FALSE) +
+    expand_limits(x=0,y=0) +
+    # scale_x_discrete(drop=FALSE) + 
+    #scale_x_continuous(expand=c(0,0)) + scale_y_continuous(expand=c(0,0)) #+
+    coord_cartesian(xlim=c(1,10),ylim=c(1,10))
+
+```
+
+#### Job Score Tables
+These tables display importance, satisfaction, and opportunity by job step (ranked within step)
+
+```{r someplot, echo=FALSE, warning=FALSE, message=FALSE}
+# {r load-packages, someplot, echo=FALSE, warning=FALSE, message=FALSE}
+# library(dplyr)
+# library(magrittr)
+# library(knitr)
+# library(paletteer)
+# library(gt)
+usethis::use_pipe()
+objective <- c("Minimize_time_to_do_job_1","Minimize_time_to_do_job_2","Minimize_time_to_do_job_3","Minimize_time_to_do_job_4","Minimize_time_to_do_job_5","Minimize_time_to_do_job_6","Minimize_time_to_do_job_7","Minimize_time_to_do_job_8","Minimize_time_to_do_job_9","Minimize_time_to_do_job_10")
+ df_test <- tibble(objective)
+
+project_name_short <- "Your JTBD Project"
+sample_description <- "N=500 Sample Description"
+
+df_test <- df_test %>%
+  mutate(`Importance` = round(runif(10,6,9.75),1)) %>%
+  mutate(`Satisfaction` = round(runif(10,5,9),1)) %>%
+  mutate(`Opportunity Score` = case_when(`Importance`>`Satisfaction`~`Importance`+`Importance`-`Satisfaction`,
+                                                    `Satisfaction`>=`Importance`~`Importance`),
+         rank_total_population=rank(`Opportunity Score`))
+
+
+  df_test %>%
+    select(-rank_total_population) %>%
+    gt(groupname_col = "Job_Step",
+       rowname_col = "Objective") %>%
+    tab_header(
+      title = md(paste0('Top Opportunities: ',project_name_short)),
+      subtitle = html(paste0("Sample: ",sample_description))
+    ) %>%
+    tab_options(
+      column_labels.border.bottom.color = "black",
+      column_labels.border.bottom.width= px(3),
+      heading.align = "left"
+    ) %>%
+    tab_style(
+      style = cell_text(color = "green",weight = "normal"),
+      locations = list(
+        cells_body(
+          columns = vars(`Opportunity Score`),
+          rows = `Opportunity Score` >= 10
+        ))) %>%
+    tab_style(
+      style = cell_text(color = "darkgreen",weight = "bold"),
+      locations = list(
+        cells_body(
+          columns = vars(`Opportunity Score`),
+          rows = `Opportunity Score` >= 12
+        ))) %>%
+    tab_style(
+      style = cell_text(color = "black", weight = "bold"),
+      locations = list(
+        cells_row_groups(),
+        cells_column_labels(everything())))
+
+```
+
+#### Cleveland (lollipop) graphs
+Compae the differences of scores between 2 groups 
+
+```{r eval=FALSE}
+get_cleveland_graph(opportunity_number_of_ffs,opportunity_number_of_ffs$objective,opportunity_number_of_ffs$opportunity_score_Sub_10,opportunity_number_of_ffs$opportunity_score_Over_10,"uu Opportunities By Number of ffs","<=10 = Blue, >10 = Red")
+#
+get_cleveland_graph()
+get_cleveland_graph <- function(data, objective, group_1,group_2,title_string,subtitle_string) {
+  objective <- enquo(objective)
+  group_1 <- enquo(group_1)
+  group_2 <- enquo(group_2)
+  # print(dplyr::quo_name(!!group_1))
+  plot <- data %>%
+    ggplot() + geom_segment(aes(x=!!objective, xend=!!objective, y=!!group_1, yend=!!group_2), color="grey") +
+    geom_point(aes(x=!!objective, y=!!group_1), color="blue", size=3) +
+    geom_point(aes(x=!!objective, y=!!group_2), color="red", size=3) +
+    coord_flip()+
+    labs(title=title_string,subtitle=subtitle_string,x="Objectives",y="Scores",color="",fill="", size="")+#,caption=paste0("Data as of ",today()) ,caption="NYC Research Team" ,caption=paste0("Created ",today())
+    theme(text=element_text(family = "Roboto"),
+          panel.grid.major = element_line(color = "#DAE1E7"),
+          panel.background = element_blank(),axis.text = element_text(size = 12),
+          axis.text.x = element_text(margin = margin(t = 5)),#hjust = 1,angle=90
+          axis.text.y = element_text(margin = margin(r = 5)),
+          axis.title = element_text (size = 15),
+          axis.line = element_line(),
+          axis.title.y = element_text(margin = margin(r = 10), hjust = 0.5),
+          axis.title.x = element_text(margin = margin(t = 10), hjust = 0.5),
+          plot.caption = element_text(size = 8,
+                                      margin = margin(t = 10),
+                                      color = "#3D4852"), 
+          title = element_text (size = 15,margin = margin(b = 10)),
+          legend.position="bottom") +
+    expand_limits(x=0,y=0)
+}
+```
+
+
 * Radar (or spider) graphs comparing the differences of scores between 2 groups
 
 <to dos: generate graphics with dummy data to show examples of each>
@@ -174,6 +321,15 @@ Build it for this survey THEN make it extensible
 * Improve the recode functions for SPSS
   * Allow the user to specify the delimiters
   * We shouldn't need to make either delimiter optional
+* Vignette
+  * Add in more sample graphics
+  * Split everything into pages
+  * Figure out how to split functions into specific functions and global functions
+* Figure out compare 2 code
+* Improve visual output of 
+  * Tables (watermark? colors?)
+  * Graph the high-value opporunities
+  
 
 
 ### Do Not Do List
