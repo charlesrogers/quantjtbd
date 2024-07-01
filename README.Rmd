@@ -18,10 +18,6 @@ knitr::opts_chunk$set(
 ```
 ------------------------------------------------------------------------
 
-#### Caveat
-_As of Monday, January 29th, 2024, I neither really know how to code nor make R packages. However that is not a prerequisite to making a package, so here we go.
-This package is for me, Charles Rogers, in my work as a mixed methods User Experience researcher._
-
 ## What the QuantJTBD Package Does
 
 The QuantJTBD package takes Jobs to Be Done^[If you'd like a good primer on JTBD, check out [this article](https://medium.com/swlh/a-jobs-to-be-done-jtbd-primer-11585d23ceec)] survey data (in the Outcome Driven Innovation^[see Tony Ulwick's fabulous [What Customers Want](https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673)] format) and measures the frequency.
