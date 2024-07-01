@@ -332,6 +332,3 @@ Build it for this survey THEN make it extensible
 
 ## Random Musings About JTBD
 From my experience doing JTBD projects in multiple industries, the jobs are largely the same at [higher levels](#), but get more distinct (and also [more useful for product decisions](#)) at lower levels.
-
-
-devtools::document()

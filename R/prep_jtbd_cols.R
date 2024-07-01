@@ -1,5 +1,7 @@
 usethis::use_package("haven")
 usethis::use_package("sjlabelled")
+usethis::use_package("dplyr")
+usethis::use_package("magrittr")
 
 #### PREP DATA - BUILD JTBD COLS ####
 #' Rename importance columns so they can be used in 'get_jtbd_scores'

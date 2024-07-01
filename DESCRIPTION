@@ -15,8 +15,11 @@ BugReports: https://github.com/charlesrogers/quantjtbd/issues
 Imports: 
     dplyr,
     gt,
+    haven,
+    labelled,
     lubridate,
-    magrittr
+    magrittr,
+    sjlabelled
 Suggests: 
     knitr,
     rmarkdown

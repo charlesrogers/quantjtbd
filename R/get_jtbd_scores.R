@@ -1,10 +1,12 @@
 usethis::use_package("labelled")
+usethis::use_package("dplyr")
+usethis::use_package("magrittr")
 
 #### JTBD FUNCTION ####
 
 #' Calculate the importance, satisfaction, and opportunity scores
 #'
-#' @param your_data_frame
+#' @param your_data_frame your dataframe
 #' @param segment_var this is the text string, within parentheses, that will be appended to each of the rows, we typically use "all"
 #'
 #' @return a data frame of scores
