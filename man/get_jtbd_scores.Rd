@@ -18,7 +18,5 @@ a data frame of scores
 Calculate the importance, satisfaction, and opportunity scores
 }
 \examples{
-#' get_jtbd_scores(df.clean,"all")
-get_jtbd_scores(df.clean,"total_pop")
-get_jtbd_scores(df,"young_adults")
+#' get_jtbd_scores(1,"all")
 }

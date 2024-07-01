@@ -18,6 +18,5 @@ a data frame with duplicated columns with "imp__job_section." added to the front
 Rename importance columns so they can be used in 'get_jtbd_scores'
 }
 \examples{
-build_imp_column_names(your_data_frame,"job_step_1")
-build_imp_column_names(df.clean,"find_available_options")
+build_imp_column_names(1,"find_available_options")
 }

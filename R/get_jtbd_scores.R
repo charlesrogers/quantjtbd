@@ -1,6 +1,3 @@
-usethis::use_package("labelled")
-usethis::use_package("dplyr")
-usethis::use_package("magrittr")
 
 #### JTBD FUNCTION ####
 
@@ -13,9 +10,7 @@ usethis::use_package("magrittr")
 #' @export
 #'
 #' @examples
-#' #' get_jtbd_scores(df.clean,"all")
-#' get_jtbd_scores(df.clean,"total_pop")
-#' get_jtbd_scores(df,"young_adults")
+#' #' get_jtbd_scores(1,"all")
 #### JTBD FUNCTION ####
 
 get_jtbd_scores <- function(your_data_frame,segment_var){

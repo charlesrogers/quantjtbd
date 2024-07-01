@@ -13,8 +13,7 @@ usethis::use_package("magrittr")
 #' @export
 #'
 #' @examples
-#' build_imp_column_names(your_data_frame,"job_step_1")
-#' build_imp_column_names(df.clean,"find_available_options")
+#' build_imp_column_names(1,"find_available_options")
 build_imp_column_names <- function(df, job_section) {
   df <- prep_data(df)
   # Add "imp__" to the beginning of the column name
