@@ -1,5 +1,5 @@
 Package: quantjtbd
-Title: What the Package Does (One Line, Title Case)
+Title: Calculates Jobs to Be Done Scores
 Version: 0.0.0.9000
 Authors@R: 
     person("Charles", "Rogers", , "charlesrogers@gmai.com", role = c("aut", "cre"),
