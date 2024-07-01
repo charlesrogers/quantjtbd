@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 ------------------------------------------------------------------------
 
 ## What the QuantJTBD Package Does
-
 The QuantJTBD package takes Jobs to Be Done^[If you'd like a good primer on JTBD, check out [this article](https://medium.com/swlh/a-jobs-to-be-done-jtbd-primer-11585d23ceec)] survey data (in the Outcome Driven Innovation^[see Tony Ulwick's fabulous [What Customers Want](https://www.amazon.com/What-Customers-Want-Outcome-Driven-Breakthrough/dp/0071408673)] format) and measures the frequency.
 
 This means you need to ask your questions on a 1-5 likert scale and recode the scales (Not important at all, Slightly important, Somewhat important, Very important, Extremely important) as numeric factors (1-5)

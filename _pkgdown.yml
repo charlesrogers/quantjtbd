@@ -1,9 +1,4 @@
-url: https://charlesrogers.github.io/quantjtbd/
+url: ~
 template:
   bootstrap: 5
 
-# todos:
-## calculation
-### add statistical signifigance to the paired comparison tables
-### make the comparison tables work
-## visulization
