@@ -4,6 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Charles", "Rogers", , "charlesrogers@gmai.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Test
 Paragraph: Calculate the importance, satisfaction, and opportunity scores from your JTBD survey data. Generate graphics and tables. Impress no one but other JTBD practitioners.
 License: MIT + file LICENSE
 Encoding: UTF-8
