@@ -3,3 +3,5 @@
 export(build_imp_column_names)
 export(build_sat_column_names)
 export(get_jtbd_scores)
+
+importFrom(magrittr,"%>%")
